@@ -1,16 +1,241 @@
 ﻿
-
 /******************      Handler      **************/
 
+declare class mxCellHighlight {
+
+    /**      
+    * A helper class to highlight cells.
+    */
+    constructor(graph: mxGraph, highlightColor: string, strokeWidth: number, dashed: boolean);
+
+    /** Specifies if the highlights should appear on top of everything else in the overlay pane.  Default is false. */
+    keepOnTop: boolean;
+
+    /** Reference to the enclosing mxGraph. */
+    graph: mxGraph;
+
+    /** Reference to the mxCellState. */
+    state: mxCellState;
+
+    /** Specifies the spacing between the highlight for vertices and the vertex.  Default is 2. */
+    spacing: number;
+
+    /** Holds the handler that automatically invokes reset if the highlight should be hidden. */
+    resetHandler: any;
+
+    /**
+     * Sets the color of the rectangle used to highlight drop targets.
+     * @param {string} color String that represents the new highlight color.
+     */
+    setHighlightColor(color: string): void;
+
+    /**
+     * Creates and returns the highlight shape for the given state.
+     */ 
+    drawHighlight(): void;
+
+    /**
+     * Creates and returns the highlight shape for the given state.
+     */
+    createShape(): void;
+    
+    /** Updates the highlight after a change of the model or view. */
+    repaint(): void;
+
+    /** Resets the state of the cell marker. */
+    hide();
+
+    /**
+     * Marks the <markedState> and fires a <mark> event.
+     * @param {mxCellState} state
+     */
+    highlight(state: mxCellState): void;
+
+    /** Destroys the handler and all its resources and DOM nodes. */
+    destroy();
+}
+
+
+
+/** 
+* A helper class to process mouse locations and highlight cells. 
+* Helper class to highlight cells 
+*/
 declare class mxCellMarker {
+
+    /**
+     * Constructs a new cell marker
+     * @param graph Reference to the enclosing mxGraph
+     * @param validColor Optional marker color for valid states.  Default is mxConstants.DEFAULT_VALID_COLOR.
+     * @param invalidColor Optional marker color for invalid states.  Default is mxConstants.DEFAULT_INVALID_COLOR.
+     * @param hotspot Portion of the width and hight where a state intersects a given coordinate pair.  A value of 0 means always highlight.  Default is mxConstants.DEFAULT_HOTSPOT.
+     */
+    constructor(graph: mxGraph, validColor?: string, invalidColor?: string, hotspot?: number);
+
+    /** Reference to the enclosing mxGraph */
+    graph: mxGraph;
+
+    /** Specifies if the marker is enabled.  Default is true. */
+    enabled: boolean;
+
+    /** Specifies the portion of the width and height that should trigger a highlight.  The area around the center of the cell to be marked is used as the hotspot.  Possible values are between 0 and 1.  Default is mxConstants.DEFAULT_HOTSPOT. */
+    hotspot: number;
+
+    /** Specifies if the hotspot is enabled.  Default is false. */
+    hotspotEnabled: boolean;
+
+    /** Holds the valid marker color. */
+    validColor: string;
+
+    /** Holds the invalid marker color. */
+    invalidColor: string;
+
+    /** Holds the current marker color. */
+    currentColor: string;
+
+    /** Holds the marked mxCellState if it is valid. */
+    validState: mxCellState;
+
+    /** Holds the marked mxCellState. */
+    markedState: mxCellState;
+
+    /**
+     * Enables or disables event handling.  This implementation updates enabled.
+     * @param {boolean} enabled
+     */
+    setEnabled(enabled: boolean): void;
+
+    /**
+     * Returns true if events are handled.  This implementation returns enabled.
+     */
+    isEnabled(): boolean;
+
+    /**
+     * Sets the hotspot.
+     * @param {number} hotspot
+     */
+    setHotspot(hotspot: number): void;
+
+    /**
+     * Returns the hotspot.
+     */
+    getHotspot(): number;
+
+    /**
+     * Specifies whether the hotspot should be used in intersects.
+     * @param {boolean} enabled
+     */
+    setHotspotEnabled(enabled: boolean): void;
+
+    /**
+     * Returns true if hotspot is used in intersects.
+     */ 
+    isHotspotEnabled(): boolean;
+
+    /**
+     * Returns true if validState is not null.
+     */
+    hasValidState(): boolean;
+
+    /**
+     * Returns the validState.
+     */
+    getValidState(): mxCellState;
+
+    /**
+     * Returns the markedState.
+     */
+    getMarkedState(): mxCellState;
+
+    /**
+     * Resets the state of the cell marker.
+     */
+    reset(): any;
+    
+    /**
+     * Processes the given event and cell and marks the state returned by getState with the color returned by 
+     * getMarkerColor.  If the markerColor is not null, then the state is stored in markedState.  If isValidState 
+     * returns true, then the state is stored in validState regardless of the marker color.  The state is 
+     * returned regardless of the marker color and valid state.
+     * @param {mxMouseEvent} me
+     */
+    process(me: mxMouseEvent): void;
+
+    /**
+     * Marks the given cell using the given color, or validColor if no color is specified
+     * @param {mxCell} cell 
+     * @param {string} color 
+     */
+    markCell(cell: mxCell, color: string): void;
+
+    /**
+     * Marks the markedState and fires a mark event.
+     */
+    mark(): void;
+
+    /**
+     * Hides the marker and fires a mark event.
+     */
+    unmark(): void;
+
+    /**
+     * Returns true if the given mxCellState is a valid state.  If this returns true, then the state is 
+     * stored in validState.  The return value of this method is used as the argument for getMarkerColor.
+     * @param {mxCellState} state
+     */
+    isValidState(state: mxCellState): void;    
+
+    /**
+     * Returns the valid- or invalidColor depending on the value of isValid.  The given mxCellState is ignored by this implementation.
+     * @param {mxEvent} evt
+     * @param {mxCellState} state
+     * @param {boolean} isValid
+     */
+    getMarkerColor(evt: mxEvent, state: mxCellState, isValid: boolean): string;
+
+    /**
+     * Uses getCell, getStateToMark and intersects to return the mxCellState for the given mxMouseEvent.
+     * @param {mxMouseEvent} me
+     */
+    getState(me: mxMouseEvent): mxCellState;
+    
+    /**
+     * Returns the mxCell for the given event and cell.  This returns the given cell.
+     * @param {mxMouseEvent} me
+     */
+    getCell(me: mxMouseEvent): mxCell;
+    
+    /**
+     * Returns the mxCellState to be marked for the given mxCellState under the mouse.  This returns the given state.
+     * @param {mxCellState} state
+     */
+    getStateToMark(state: mxCellState): mxCellState;
+    
+    /**
+     * Returns true if the given coordinate pair intersects the given state.  This returns true if the hotspot is 0 
+     * or the coordinates are inside the hotspot for the given cell state.
+     * @param state
+     * @param me
+     */
+    intersects(state, me): boolean;
+    
+    /**
+     * Destroys the handler and all its resources and DOM nodes.
+     */
+    destroy(): void;
 
 }
 
 declare class mxConstraintHandler {
-
+    
 }
 
 declare class mxEdgeHandler {
+
+    /** Graph event handler that reconnects edges and modifies control points and the edge label location.  
+    * Uses <mxTerminalMarker> for finding and highlighting new source and target vertices.  This handler is 
+    * automatically created in mxGraph.createHandler for each selected edge. */
+    constructor(state: mxCellState);
 
     /** Reference to the enclosing mxGraph. */
     graph: mxGraph;
@@ -19,7 +244,7 @@ declare class mxEdgeHandler {
     state: mxCellState;
 
     /** Holds the <mxTerminalMarker> which is used for highlighting terminals. */
-    marker: any;
+    marker: mxCellMarker;
 
     /** Holds the mxConstraintHandler used for drawing and highlighting constraints. */
     constraintHandler: mxConstraintHandler;
@@ -455,6 +680,31 @@ declare class mxEdgeHandler {
      * handlers are destroyed automatically when the corresponding cell is deselected.
      */
     destroy(): void;
+
+    /** 
+    * @private
+    */
+    isSource: boolean;
+}
+
+declare class mxEdgeSegmentHandler extends mxEdgeHandler {
+    getPreviewPoints(point);
+    createBends();
+    redraw();
+    refresh();
+    redrawInnerBends(p0, pe);
+    changePoints(edge, points);
+}
+
+declare class mxElbowEdgeHandler extends mxEdgeHandler {
+    flipEnabled;
+    doubleClickOrientationResource;
+    createBends();
+    createVirtualBend();
+    getCursorForBend();
+    getTooltipForNode(node);
+    convertPoint(point, gridEnabled);
+    redrawInnerBends(p0, pe);
 }
 
 declare module mxSelectionCellsHandler {
@@ -475,6 +725,53 @@ declare class mxSelectionCellsHandler extends mxEventSource {
 
     handlers: mxDictionary;
 
+}
+
+declare class mxVertexHandler {
+    /** Event handler for resizing cells.  This handler is automatically created in mxGraph.createHandler. */
+    constructor(state: mxCellState);
+    graph;
+    state;
+    singleSizer;
+    index;
+    allowHandleBoundsCheck;
+    handleImage;
+    tolerance;
+    rotationEnabled;
+    rotationRaster;
+    livePreview;
+    manageSizers;
+    constrainGroupByChildren;
+    init();
+    updateMinBounds();
+    getSelectionBounds(state);
+    createSelectionShape(bounds);
+    getSelectionColor();
+    getSelectionStrokeWidth();
+    isSelectionDashed();
+    createSizer(cursor, index, size, fillColor);
+    isSizerVisible(index);
+    createSizerShape(bounds, index, fillColor);
+    moveSizerTo(shape, x, y);
+    getHandleForEvent(me);
+    mouseDown(sender, me);
+    start(x, y, index);
+    hideSizers();
+    checkTolerance(me);
+    mouseMove(sender, me);
+    mouseUp(sender, me);
+    rotateCell(cell, delta);
+    reset();
+    resizeCell(cell, dx, dy, index, gridEnabled);
+    moveChildren(cell, dx, dy);
+    union(bounds, dx, dy, index, gridEnabled, scale, tr);
+    union(bounds, dx, dy, index, gridEnabled, scale, tr);
+    union(bounds, dx, dy, index, gridEnabled, scale, tr);
+    redraw();
+    redrawHandles();
+    redrawHandles();
+    drawPreview();
+    destroy();
 }
 
 /******************      Handler end     **************/

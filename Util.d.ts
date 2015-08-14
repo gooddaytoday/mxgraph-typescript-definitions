@@ -96,14 +96,41 @@ declare class mxEvent {
 }
 
 declare class mxMouseEvent {
-
+    consumed;
+    evt;
+    graphX;
+    graphY;
+    state;
+    getEvent();
+    getSource();
+    isSource(shape);
+    getX();
+    getY();
+    getGraphX();
+    getGraphY();
+    getState();
+    getCell();
+    isPopupTrigger();
+    isConsumed();
+    consume(preventDefault);
 }
 
 
 declare class mxPoint {
 
     /** Constructs a new point for the optional x and y coordinates.  If no coordinates are given, then the default values for x and y are used. */
-    constructor();
+    constructor(x: number, y: number);
+
+    x: number;
+    y: number;
+
+    /**
+     * Returns true if the given object equals this point.
+     * @param obj
+     */
+    equals(obj: any): boolean;
+
+    clone();
 
 }
 
